@@ -1,0 +1,1 @@
+docker run -p 26900:26900/tcp -p 26900:26900/udp -p 26901:26901/udp -p 26902:26902/udp -p 8081:8081/tcp -e SEVEN_DAYS_TO_DIE_START_MODE="1" -v /data/sevendays/darknessfalls-container/game:/steamcmd/7dtd -v /data/sevendays/darknessfalls-container/data:/app/.local/share/7DaysToDie --name 7dtd-server -d --rm didstopia/7dtd-server:latest
