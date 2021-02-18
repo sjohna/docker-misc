@@ -1,0 +1,19 @@
+version: "3"
+services:
+  valheim:
+    image: mbround18/valheim:latest
+    ports:
+      - 2456:2456/udp
+      - 2457:2457/udp
+      - 2458:2458/udp
+    environment:
+      - PORT=2456
+      - NAME="Banana Phone"
+      - WORLD="Banana Phone"
+      - PASSWORD="goatcheese"
+      - TZ=America/Denver
+      - PUBLIC=0
+      - AUTO_UPDATE=0
+    volumes:
+    - ./saves:/home/steam/.config/unity3d/IronGate/Valheim
+    - ./server:/home/steam/valheim
