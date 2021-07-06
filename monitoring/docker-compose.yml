@@ -6,6 +6,7 @@ networks:
 services:
   grafana:
     image: grafana/grafana:8.0.3
+    container_name: monitoring_grafana
     ports:
       - 3000:3000
     networks:
@@ -17,14 +18,36 @@ services:
       - GF_METRICS_ENABLED=true
       - GF_METRICS_DISABLE_TOTAL_STATS=false
 
-  prometheus:
-    image: prom/prometheus:v2.28.0
+  influxdb:
+    image: influxdb:2.0.7
+    container_name: monitoring_influxdb
     ports:
-      - 9090:9090
+      - 8086:8086
     networks:
       - monitoring
+    environment:
+      - INFLUXD_CONFIG_PATH=/etc/influxdb2/config
     volumes:
-      - ./prometheus/etc/prometheus:/etc/prometheus
-      - ./prometheus/prometheus:/prometheus
-    user: "1000"
+      - ./influxdb/home/influxdb/.influxdbv2:/home/influxdb/.influxdbv2
 
+  telegraf:
+    image: telegraf:1.19.0
+    container_name: monitoring_telegraf
+    depends_on:
+      - "influxdb"
+    environment:
+      - INFLUX_TOKEN=<redacted>
+      - HOST_ETC=/hostfs/etc
+      - HOST_PROC=/hostfs/proc
+      - HOST_SYS=/hostfs/sys
+      - HOST_VAR=/hostfs/var
+      - HOST_RUN=/hostfs/run
+      - HOST_MOUNT_PREFIX=/hostfs
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /:/hostfs:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    tty: true
+    networks:
+      - monitoring
+    privileged: true
